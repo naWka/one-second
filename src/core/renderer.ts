@@ -161,7 +161,8 @@ export class Renderer {
   }
 
   resize() {
-    this.width = window.innerWidth;
+    // layout width, not innerWidth: a zoomed-out phone page must not stretch the canvas
+    this.width = document.documentElement.clientWidth || window.innerWidth;
     this.height = window.innerHeight;
     this.gl.setPixelRatio(this.dpr);
     this.composer.setSize(this.width, this.height, true);

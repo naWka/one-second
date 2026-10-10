@@ -57,6 +57,7 @@ export class HudView {
     if (factor !== this.last.factor) this.factor.textContent = this.last.factor = factor;
     if (scene !== this.last.scene) {
       this.last.scene = scene;
+      document.documentElement.classList.toggle('is-final', scene === this.railBtns.length);
       this.railBtns.forEach((b) => {
         const k = Number(b.dataset.goto);
         b.classList.toggle('is-active', k === scene);

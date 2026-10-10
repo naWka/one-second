@@ -161,9 +161,14 @@ html.no-webgl body {
   color: var(--muted);
   font-size: 11px;
 }
-.label.is-left .label-box {
+.label.is-left .label-box,
+.label.is-flip .label-box {
   left: auto;
   right: 14px;
+}
+.label.is-left.is-flip .label-box {
+  left: 14px;
+  right: auto;
 }
 .label.is-teal::before {
   background: var(--teal);
@@ -376,6 +381,7 @@ html.no-webgl body {
 #story {
   position: relative;
   z-index: 2;
+  overflow-x: clip;
 }
 
 .scene {
@@ -531,10 +537,12 @@ html:not(.js) .step > p,
   }
 }
 .cover-hint {
+  /* centred without transform: the rise animation owns transform, and a hint
+     stuck half off-screen made phones zoom the whole page out */
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 28px;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1385,7 +1393,9 @@ html.is-rewinding #gl {
 @media (max-width: 760px) {
   :root {
     --gutter: 16px;
-    --card-w: calc(100vw - 32px);
+    /* the right lane stays clear for the scene rail */
+    --rail-lane: 36px;
+    --card-w: calc(100vw - var(--gutter) - var(--rail-lane));
     --step-center: 74svh;
   }
   body {
@@ -1394,6 +1404,11 @@ html.is-rewinding #gl {
   .hud {
     top: 12px;
     left: 16px;
+  }
+  .label-box {
+    width: max-content;
+    max-width: calc(100vw - 64px);
+    white-space: normal;
   }
   .hud-kicker {
     font-size: 9px;
@@ -1426,6 +1441,9 @@ html.is-rewinding #gl {
     font-size: 16.5px;
     padding: 18px 20px;
   }
+  .step-wow {
+    width: calc(100vw - 2 * var(--rail-lane));
+  }
   .step-wow > p {
     font-size: 23px;
   }
@@ -1436,7 +1454,7 @@ html.is-rewinding #gl {
     top: auto;
     bottom: 104px;
     transform: none;
-    right: 16px;
+    right: var(--rail-lane);
   }
   .cover-title {
     font-size: clamp(38px, 11vw, 56px);
@@ -1461,7 +1479,7 @@ html.is-rewinding #gl {
     -webkit-backdrop-filter: none;
   }
   .ov-message {
-    right: 16px;
+    right: var(--rail-lane);
     left: 16px;
     top: 92px;
     width: auto;
@@ -1487,7 +1505,7 @@ html.is-rewinding #gl {
   }
   .ov-bin {
     left: 16px;
-    right: 16px;
+    right: var(--rail-lane);
     bottom: auto;
     top: 92px;
     padding: 12px 14px;
@@ -1497,7 +1515,7 @@ html.is-rewinding #gl {
   }
   .ov-risk {
     left: 12px;
-    right: 12px;
+    right: var(--rail-lane);
     top: 84px;
     transform: none;
     width: auto;
@@ -1549,6 +1567,30 @@ html.is-rewinding #gl {
   .ov-settle {
     bottom: auto;
     top: 96px;
+  }
+
+  /* the finale card takes the whole width: the timer, rail and sound step aside */
+  .hud,
+  .hud-shade,
+  .rail,
+  .sound {
+    transition:
+      opacity 0.4s var(--ease),
+      visibility 0s linear 0s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+  html.is-final .hud,
+  html.is-final .hud-shade,
+  html.is-final .rail,
+  html.is-final .sound {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.4s var(--ease),
+      visibility 0s linear 0.4s,
+      color 0.3s,
+      border-color 0.3s;
   }
 
   .scene-fees {
